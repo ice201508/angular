@@ -60,4 +60,26 @@ npm install grunt-contrib-conncet@0.10.1 --save
 
 ```
 npm install grunt-contrib-less --save
+
+//修改配置文件gruntFile.js
+
+less: {
+  files: "<%= yeoman.app %>/styles/main.less",
+  tasks: ['less:development', 'newer:copy:styles', 'autoprefixer'],
+  options: {
+    debounceDelay: 250
+  }
+},
+
+再在外面添加less任务development
+less: {
+  development: {
+    files: {
+      "<%= yeoman.app %>/styles/main.css": "<%= yeoman.app %>/styles/main.less"
+    }
+  }
+},
+
+//然后再后面对应的任务下面添加
+'less:development',
 ``
