@@ -45,3 +45,19 @@ angular-bootstrap版本一定要下对,不然默认最新的版本是用不了�
 或者下载时直接指定版本号
 bower install angular-bootstrap#0.12.1 --save
 ```
+
++ grunt常见的错误
++ livereload在运行grunt serve时出现错误,是因为grunt-contrib-connect版本大于0.11.x时不支持connect.static和connect.directory，应该安装serve-static,并在gruntfile.js文件里面的 livereload配置里面设置
+
+```
+//安装时带上版本号
+npm install grunt-contrib-conncet@0.10.1 --save
+```
+
+## 使用less
+
++ 需要安装grunt-contrib-less 外部库,用npm
+
+```
+npm install grunt-contrib-less --save
+``
