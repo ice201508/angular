@@ -1,15 +1,17 @@
-# migu
+# myAPP
 
-This project is generated with [yo angular generator](https://github.com/yeoman/generator-angular)
-version 0.15.1.
+[yo angular generator](https://github.com/yeoman/generator-angular)
 
-## Build & development
+## 使用
 
-Run `grunt` for building and `grunt serve` for preview.
-
-## Testing
-
-Running `grunt test` will run the unit tests with karma.
+```
+//别人使用ssh地址上传时不需要密码验证
+git clone https://github.com/ice201508/angular.git
+npm install  一定要等待安装提示完成才能使用
+//bower install不用,已经导入进去了,根据bower.json自动安装时有问题
+grunt serve 本地服务运行
+grunt build 打包前端代码
+```
 
 ## 外部库
 
