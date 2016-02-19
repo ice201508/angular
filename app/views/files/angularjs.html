@@ -1,0 +1,1023 @@
+<article class="markdown-body my-contain">
+    <p><strong>AngularJS学习总结</strong></p>
+    <blockquote>
+        <p>四个核心特性:</p>
+    </blockquote>
+    <p><a href="http://docs.ngnice.com/guide">官方API</a>
+        <br />
+        <a href="http://each.sinaapp.com/angular/">Demo</a>
+        <br />
+        <a href="https://github.com/angular">github库</a></p>
+    <div class="toc">
+        <ul>
+            <li><a href="#mvc">MVC</a></li>
+            <li><a href="#_1">双向数据绑定</a></li>
+            <li><a href="#_2">模块化</a>
+                <ul>
+                    <li><a href="#_3">过滤器</a></li>
+                    <li><a href="#_4">控制器</a></li>
+                </ul>
+            </li>
+            <li><a href="#_5">指令系统</a>
+                <ul>
+                    <li><a href="#scope">自定义指令  scope属性</a></li>
+                    <li><a href="#_6">指令核心配置(参数)</a>
+                        <ul>
+                            <li><a href="#scopeboolean">scope参数(boolean或对象)</a></li>
+                            <li><a href="#transclude">transclude 指令的内嵌</a></li>
+                            <li><a href="#controller">controller参数</a></li>
+                            <li><a href="#compilelink">compile参数，link参数 编译和链接</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#_7">常用指令</a>
+                        <ul>
+                            <li><a href="#text">text</a></li>
+                            <li><a href="#chekbox">chekbox</a></li>
+                            <li><a href="#radio">radio</a></li>
+                            <li><a href="#_8">布尔属性</a></li>
+                            <li><a href="#ng-form">ng-form</a></li>
+                            <li><a href="#select">select</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><a href="#_9">作用域</a>
+                <ul>
+                    <li><a href="#_10">当前作用域</a></li>
+                    <li><a href="#js-github">js原型继承机制  github原型继承</a></li>
+                    <li><a href="#angularjsscope">AngularJS作用域scope继承</a>
+                        <ul>
+                            <li><a href="#ng-repeat-parentindex">ng-repeat 子作用域 $parent，$index</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><a href="#_11">外部库</a>
+                <ul>
+                    <li><a href="#_12">路由及视图</a></li>
+                    <li><a href="#restangular">restangular</a></li>
+                    <li><a href="#angular-cookies">angular-cookies</a></li>
+                    <li><a href="#angular-ui-bootstrap">angular-ui-bootstrap</a></li>
+                    <li><a href="#ngresource">ngResource</a></li>
+                    <li><a href="#nganimate">ngAnimate</a></li>
+                </ul>
+            </li>
+            <li><a href="#_13">表达式</a></li>
+            <li><a href="#_14">表单验证</a></li>
+            <li><a href="#_15">项目架构/目录结构</a></li>
+            <li><a href="#_16">常用方法</a>
+                <ul>
+                    <li><a href="#setinterval">setInterval</a></li>
+                    <li><a href="#angularforeach">angular.forEach</a></li>
+                    <li><a href="#watchdigestapply">$watch/$digest/$apply</a></li>
+                </ul>
+            </li>
+            <li><a href="#_17">项目修改</a></li>
+            <li><a href="#angular">angular运行机制</a></li>
+            <li><a href="#angular_1">angular权限控制</a></li>
+        </ul>
+    </div>
+    <h2 id="mvc"><a name="user-content-mvc" href="#mvc" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>MVC</h2>
+    <blockquote>
+        <p><code>html文件:</code></p>
+    </blockquote>
+    <pre><code class="python">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot; ng-app=&quot;myApp&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;title&gt;MVC&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div ng-controller=&quot;myCtrl&quot;&gt;
+        &lt;p&gt;{{greeting.text}},AngularJS&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;script src=&quot;http://apps.bdimg.com/libs/angular.js/1.3.9/angular.min.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;myHello.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+    <blockquote>
+        <p><code>js文件:</code></p>
+    </blockquote>
+    <pre><code>angular.module(&quot;myApp&quot;,[])
+    .controller('myCtrl', ['$scope', function ($scope) {
+        $scope.greeting={
+            text:'Hello'
+        };
+    }]);
+</code></pre>
+    <blockquote>
+        <p>model即数据层，在$scope里给绑定对象greeting的属性赋值就充当了模型M的角色
+            <br /> view即视图层，在html页面中p标签是对外展示的内容，充当了V的角色
+            <br /> controller即控制层，在js中实现的在html里的函数。在js文件中的匿名函数充当了C的角色
+        </p>
+    </blockquote>
+    <h2 id="_1"><a name="user-content-_1" href="#_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>双向数据绑定</h2>
+    <p>model层的变量可以绑定到视图层的内容上，前端视图层的数据也可以自动同步到数据模型中去，ng-model将视图上的元素和当前作用域的属性进行绑定</p>
+    <blockquote>
+        <pre><code>&lt;input ng-model=&quot;greeting.text&quot;&gt;
+&lt;p&gt;{{greeting.text}},AngularJS&lt;/p&gt;
+</code></pre>
+    </blockquote>
+    <p>使用一个greeting.text表达式同时绑定一个文本框和一个p标签，从而实现数据保存联动刷新</p>
+    <h2 id="_2"><a name="user-content-_2" href="#_2" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>模块化</h2>
+    <ul>
+        <li>大量定义的一些全局变量和函数会污染JS的全局上下文执行环境，angularJS通过module来显示的定义一个模块，虽然模块化约束了代码中函数和变量的作用范围和使用方式，但可以通过Module里依赖注入的方式弥补不足。 </li>
+        <li><code>angular.module('myApp',[])</code> 可以接受2个参数，模块名称(字符串)和依赖列表(字符数组)。只有模块名称时表示引用一个模块</li>
+    </ul>
+    <blockquote>
+        <p><code>图床使用幻域图床</code> <a href="http://pic.ffsky.net/ice_2015">我的图床</a></p>
+    </blockquote>
+    <p><img alt="72c193dd66e4c826710d5bb5cc590323.png" src="http://pic.ffsky.net/images/2015/12/08/72c193dd66e4c826710d5bb5cc590323.png" /></p>
+    <p>使用angular.module定义一个模块。并且显示声明一个控制器myCtrl,匿名函数也变成了控制器的一个内部函数。$scope参数会在控制器函数被调用时自动作为参数注入到函数，这就是依赖注入</p>
+    <h3 id="_3"><a name="user-content-_3" href="#_3" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>过滤器</h3>
+    <ul>
+        <li>格式化需要展示的数据，内置过滤器和自定义过滤器</li>
+        <li>html模板中用<code>{{name | uppercase}}</code> 来调用过滤器。 在js代码中通过$filter服务来调用过滤器</li>
+    </ul>
+    <pre><code>    &lt;p&gt;js内部的过滤器{{filterName}}&lt;/p&gt;
+
+    angular.module(&quot;myApp&quot;,[])
+        .controller('myCtrl', ['$scope','$filter', function ($scope,$filter) {
+            $scope.filterName=$filter('uppercase')('Hello wORld 22a');
+            )]};
+</code></pre>
+    <ul>
+        <li>内置过滤器，还可以传递参数</li>
+    </ul>
+    <p><pre><code>    &lt;h3&gt;{{clock | date :'medium'}}&lt;/h3&gt;
+    &lt;h3&gt;{{clock | date :'fullDate'}}&lt;/h3&gt;
+    &lt;p&gt;{{123.12312|number:3}}&lt;/p&gt;
+    &lt;p&gt;{{123.12312|currency}}&lt;/p&gt;
+    &lt;p&gt;{{greeting|json}},AngularJS&lt;/p&gt;
+</code></pre>
+        <br /> + 自定义过滤器，即可以单独创建一个过滤器的模块，也可以在已有的模块上用filter方法单独放在一个文件中，</p>
+    <pre><code>    &lt;p&gt;首字母大写过滤器{{ 'there is SUPER man' | lowercase | capital}}&lt;/p&gt;
+
+    .filter('capital',function(){  //首字母大写过滤器
+        return function(data){
+            if(data){   //data是传入的字符串
+                return data[0].toUpperCase()+data.slice(1);
+            }
+        };
+    })
+    //或者自定义模块
+    angular.module('myApp.filters',[])
+        .filter();
+</code></pre>
+    <h3 id="_4"><a name="user-content-_4" href="#_4" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>控制器</h3>
+    <ul>
+        <li>angularJS控制器是一个函数，用来向视图中添加额外的功能</li>
+        <li>ng-controller指令可以将一个控制器对象附加到DOM元素上，为特定的DOM元素创建一个新的$scope对象，并将它嵌套在$rootScope中。每个控制器都有自己的当前作用域，</li>
+        <li>控制器应该尽量保持精简，不进行DOM操作和数据操作，利用指令和服务简化控制器的书写</li>
+    </ul>
+    <pre><code>    angular.module('myApp',[])
+        .controller('myCtrl',['$scope','myServe',function($scope,myServe){
+            $scope.onLogin=function(user){
+            myServe.runLogin(user); //用服务来操作ajax数据处理
+        }
+        }])
+</code></pre>
+    <h2 id="_5"><a name="user-content-_5" href="#_5" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>指令系统</h2>
+    <h3 id="scope"><a name="user-content-scope" href="#scope" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>自定义指令  <a href="http://segmentfault.com/a/1190000002773689">scope属性</a></h3>
+    <blockquote>
+        <p>指令可以理解为在特定DOM元素上运行的函数，指令可以扩展这个元素的功能
+            <br /> 给自定义的指令加上自己特有的前缀，区别其他的指令，如 lei-directive
+            <br /> html页面中，指令是操作DOM的唯一途径，如ng-app
+        </p>
+    </blockquote>
+    <pre><code>    &lt;lei-Direc-a&gt;&lt;/lei-Direc-a&gt;
+
+    .directive('leiDirecA',[function(){...}]};
+</code></pre>
+    <blockquote>
+        <p>js文件中</p>
+    </blockquote>
+    <p><pre><code>    .directive('myDirective', [function () {
+        return {
+            restrict: 'EA',
+            template:'&lt;div&gt;hello directive&lt;/div&gt;',
+            replace:true
+        };
+    }]);
+
+    //另一种写法
+    .directive('leiDirecB',[function(){
+        var obj={
+            restrict:'AE',
+            scope:false,
+            template:'&lt;div&gt;hello&lt;/div&gt;',
+            replace:true
+        };
+        return obj;
+    }]);
+
+</code></pre>
+        <br /> + 在模块里用directive方法创建了一个解释hello标签的函数，使用一个指定的模板来渲染hello标签
+        <br /> + <strong>指令的好处</strong> angular实现自定义的指令系统，可以根据自己的需要，封装很多功能组件，在需要的时候调用。例如ng-app就是an gularjs的内置指令，类似c语言的main入口函数，每个程序只能有一个
+        <br /> + 元素和属性 <code>&lt;input&gt;</code> <code>&lt;p&gt;&lt;/p&gt;</code> 就是元素 <code>&lt;input type="text" required /&gt;</code> type=&rdquo;text&rdquo;,required就是属性,值可以没有
+        <br /> + ng-app内置指令只能以属性AECM的形式使用 <code>&lt;html ng-app&gt;</code> 或者 <code>&lt;html ng-app="myApp"&gt;</code>
+        <br /> + 自定义指令通过angularJS模块API中的.directive()方法来注册，含2个参数，指令名必须用驼峰法命名myDirective，在html页面中用-分开每个单词(大写字母区分)my-directive。一般使用属性模式</p>
+    <pre><code>    &lt;div my-directive-a&gt;&lt;div&gt;
+    restrict:'A',
+</code></pre>
+    <ul>
+        <li>指令与表达式。给属性指令赋值会发生什么? 如 <code>&lt;div ng-init="str='property'"&gt;</code> $emsp; <code>&lt;span&gt;{{str}}&lt;/span&gt;</code></li>
+    </ul>
+    <blockquote>
+        <p>向指令中传递数据,将指令模板转换成可以接受2个变量的形式，更好的体验</p>
+    </blockquote>
+    <pre><code>    &lt;div my-directive my-url=&quot;www.baidu.com&quot; my-link-text=&quot;Click me&quot;&gt;&lt;/div&gt;
+
+    template:'&lt;a href=&quot;{{myUrl}}&quot;&gt;{{myLinkText}}&lt;/a&gt;',
+
+```bash
+    &lt;input ng-model=&quot;greeting.text&quot;&gt;
+    &lt;p&gt;{{greeting.text}},AngularJS&lt;/p&gt;
+</code></pre>
+    <h3 id="_6"><a name="user-content-_6" href="#_6" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>指令核心配置(参数)</h3>
+    <pre><code>    var obj={
+        restrict:'AEMC',
+        priority:number, 指令的优先级
+        template:'html代码字符串', 指令使用的模板
+        templateUrl:'URL地址',
+        replace:true/false, 若为false则append在当前元素上
+        transclude:true/fasle, 是否将当前的内容转移到模板中
+        scope:bool/{..}, 指定指令的作用域，和外部作用域数据交互
+        controller:function myFunc($scope,$element,$attr,$transclude){...},定义和其他指令进行交互的接口函数
+        link:function postLink(scope,iElement,iAttrs){...}, 以编程的方式操作DOM，包括添加监听器等
+        compile:function compile(tElement,tAttrs,transclude){...}, 编程的方式修改DOM模板的副本，可以返回链接函数
+    };
+    return obj;
+</code></pre>
+    <h4 id="scopeboolean"><a name="user-content-scopeboolean" href="#scopeboolean" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>scope参数(boolean或对象)</h4>
+    <ul>
+        <li>指令作用域scope，分为外部作用域、继承作用域、隔离(独立)作用域{}</li>
+        <li><code>scope:true, scope:{}</code> scope为true时会从父作用域继承并创建一个新的作用域对象。内置指令ng-controller就会从父级作用域继承并创建一个新的作用域。scope:{} 表示标签拥有自己的作用域，每个模板就有自己的数据，不会互相干扰</li>
+        <li>将指令内部的隔离作用域同外部的作用域进行数据绑定，为了让指令可以房屋当前本地作用域中的变量，可以使用下面4种方法</li>
+    </ul>
+    <pre><code>    scope:{
+        ngModel:'=',  //将ngModel同指定的对象绑定,变量对应ng-model
+        onSend:'&amp;',   //将引用传递给这个方法，一个函数 add()
+        formName:'@'  //储存与fromName相关的字符串,一个字符串 &quot;string&quot;
+    }
+</code></pre>
+    <p><strong>指令</strong></p>
+    <p>每当一个指令被创建时，都会有一个选择，是继承自己的父作用域(一般是外部的controller提供的作用域或者根作用域$rootScope),还是创建一个新的作用域。angularJS为我们的指令scope参数提供了2种选择，true,false,{} 默认情况下是false</p>
+    <ol>
+        <li><code>scope:false</code> 默认行为，指令使用原有作用域</li>
+        <li><code>scope:true</code> 指令创建一个子作用域，并且从父作用域进行原型继承，</li>
+        <li><code>scope:{...}</code>指令创建一个独立的Isolate作用域，没有原型继承。不会直接访问或者修改父作用域的属性。与父作用域通信的4种方式 <code>= @ &amp;</code>link函数。 Isolate作用域的<code>$parent</code>指向父作用域</li>
+        <li>transclude:true 指令创建一个子作用域，与<code>$Isolate</code>作用域是相邻关系，它们的$parent属性指向同一个父作用域。Isolate作用域的<code>$$nextSibling</code>指向transclude作用域</li>
+    </ol>
+    <pre><code class="javascript">     //如果不用隔离作用域，修改其中一个其他的都会发生变化
+    &lt;div ng-init=&quot;user='init value'&quot; lei-direc1&gt;&lt;/div&gt; 
+    &lt;div ng-init=&quot;user='init value'&quot; lei-direc1&gt;&lt;/div&gt;
+    &lt;div ng-init=&quot;user='init value'&quot; lei-direc1&gt;&lt;/div&gt;
+
+    .directive('leiDirec1',[function(){
+        return {
+            restrict:'AE',
+            template:'&lt;div&gt;&lt;input type=&quot;text&quot; ng-model=&quot;user&quot;/&gt;user: {{user}}&lt;/div&gt;', //关键是模板里这个{{user}}的绑定，和父作用域的数据绑定
+            scope:{},  //独立作用域，不加这句，会先访问外部作用域的user属性，现在会不看父作用域
+            //scope:true,  默认为false
+            replace:true
+        };
+    }])
+</code></pre>
+    <ul>
+        <li>隔离作用域的数据绑定，与外部数据交互。</li>
+        <li>
+            <p>3种类型的数据绑定方式: @基于字符串的绑定 =基于变量的绑定 &amp;基于方法的绑定</p>
+        </li>
+        <li>
+            <p><code>@绑定字符串 my-name="{{name}}"</code></p>
+        </li>
+    </ul>
+    <pre><code class="javascript">    //使用了3次自定义指令，每个指令内部都有一个say属性，这个属性在指令内部绑定了@,
+    &lt;lei-direc2 say=&quot;str1字符串&quot;&gt;&lt;/lei-direc2&gt;
+    //和绑定变量的区别:用的是 &quot;param.name&quot; 而这里是要传入字符串的,必须写成 &quot;{{param.name}}&quot;
+    &lt;lei-direc2 say=&quot;{{str2}}&quot;&gt;&lt;/lei-direc2&gt;  //{{str}}是表达式，会先解析成具体内容，再当做字符串
+    &lt;lei-direc2 say=&quot;test()&quot;&gt;&lt;/lei-direc2&gt;
+
+    .directive('leiDirec2',[function(){
+        return {
+            restrict:'AE',
+            template:'&lt;div&gt;{{say}}&lt;/div&gt;',  //模板中使用{{say}}会输出say的内容
+            scope:{
+                say:'@'  //这个属性绑定了一个&quot;&quot;的字符串
+            },
+            replace:true
+        };
+    }])
+
+    //
+    &lt;lei-direc2 say-name=&quot;@sayName绑定&quot;&gt;&lt;/lei-direc2&gt;
+
+    scope:{
+        //这个say是给指令内部模板用的，@后面的变量是个页面上绑定用的，不写的话默认用say
+        say:'@sayName'
+    },
+    template:'&lt;div&gt;指令内部绑定的:{{say}}&lt;div&gt;',
+</code></pre>
+    <ul>
+        <li><code>绑定变量</code>age=&rdquo;age&rdquo;`</li>
+    </ul>
+    <pre><code class="javascript">    //这个输入框的ng-model指令是指向父scope的testname属性
+    Ctrl:&lt;input type=&quot;text&quot; ng-model=&quot;testname&quot;&gt; &lt;br&gt;
+    Dir3:&lt;lei-direc3 name=&quot;testname&quot;&gt; &lt;br&gt;  //自定义指令的通过name属性与外界交互，将外部变量当做一个参数传递给自定义指令的name属性
+
+    .directive('leiDirec3',[function(){
+        return {
+            restrict:'AE',
+            scope:{ //隔离scope,指令内部的{{name}}表达式被隔离在指令内部的scope中
+                name:'='
+            },
+            //替换模板，name绑定的是外部的变量，标签内部，将name绑定到输入框中。无论修改哪个框另一个都会变化
+            template:'&lt;input type=&quot;text&quot; ng-model=&quot;name&quot; /&gt;', 
+            replace:true
+        };
+    }])
+</code></pre>
+    <ul>
+        <li><code>&amp;绑定方法 change-my-age="changeAge()"</code></li>
+    </ul>
+    <pre><code>    &lt;input type=&quot;text&quot; ng-model=&quot;sayName&quot;&gt;&lt;br&gt;
+    //指令使用了隔离作用域，但还是可以使用父作用域的属性和方法
+    &lt;lei-direc2 say-name=&quot;{{age}}&quot; var-Model=&quot;sayName&quot;&gt;&lt;/lei-direc2&gt;
+
+    .directive('leiDirec2',[function(){
+            return{
+                restrict:'AE',
+                scope:{
+                    say:'@sayName',
+                    varModel:'=',
+                    changAge:'&amp;changeMyAge'
+                },
+                template:'&lt;div&gt;模板:指令内部绑定的字符串:&lt;span ng-bind=&quot;say&quot;&gt;&lt;/span&gt;'+
+                ',变量:&lt;input type=&quot;text&quot; ng-model=&quot;varModel&quot; chang-my-age=&quot;changeAge()&quot;&gt;&lt;div&gt;',
+                replace:true
+            };
+    }]);
+</code></pre>
+    <ul>
+        <li><code>@&amp;=一个完整指令的scope写法</code></li>
+    </ul>
+    <pre><code>    &lt;div&gt;姓名:{{name}} &amp;emsp;年龄:{{age}}&lt;/div&gt;
+    &lt;div lei-direc3 my-name=&quot;{{name}}&quot; age=&quot;age&quot; change-my-age=&quot;changeAge()&quot;&gt;&lt;/div&gt;
+
+    .directive('leiDirec3',function(){
+        var obj={
+            restrict:'AE',
+            scope:{
+                name:'@myName',
+                age:'=',
+                changeAge1:'&amp;changeMyAge'
+            },
+            replace:true,
+            template:'&lt;div&gt;下面是用指令生成的数据'+
+            '&amp;emsp;姓名:{{name}}&amp;emsp;年龄:{{age}}&lt;br&gt;'+
+            '修改姓名:&lt;input type=&quot;text&quot; ng-model=&quot;name&quot;&gt;&lt;br /&gt;'+
+            '调用外部作用域的方法:&lt;button ng-click=&quot;changeAge1()&quot;&gt;修改年龄&lt;/button&gt;&lt;/div&gt;',
+        };
+        return obj;
+    });
+</code></pre>
+    <h4 id="transclude"><a name="user-content-transclude" href="#transclude" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>transclude 指令的内嵌</h4>
+    <ul>
+        <li><a href="http://www.ngnice.com/posts/28116df4d6f938">transclude的用法</a></li>
+        <li>如标签内部嵌套其他的标签，若要在自定义的标签中嵌套其他的元素标签，需要使用transclude:true,并用ng-transcluded属性定义嵌套的位置</li>
+    </ul>
+    <pre><code>    //在页面中嵌套自己已有的指令
+    &lt;div lei-direc4&gt;&lt;lei-direc3&gt;&lt;/lei-direc3&gt;&lt;/div&gt;
+
+    .directive('leiDirec4',function(){
+        return {
+            restrict:'A',
+            transclude:true,
+            //它将从DOM元素中获取的内容放到它发现ng-transclude指令的地方
+            template:'&lt;div&gt;模板指令：&lt;b ng-transclude style=&quot;color:red;&quot;&gt;&lt;/b&gt;&lt;/div&gt;',
+        };
+    });
+</code></pre>
+    <h4 id="controller"><a name="user-content-controller" href="#controller" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>controller参数</h4>
+    <ul>
+        <li>可以用字符串的形式，会去作用域里找相应的控制器。也可以在指令内部用匿名函数的写法来定义一个内联控制器。</li>
+    </ul>
+    <pre><code>controller:
+    function($scope,$element,$attrs,$transclude){...},
+//这四个是一些特殊的服务,注入到指令中,也可以将一些其他的服务传入控制器中,如$log等
+
+$socpe  与指令相关的当前作用域
+$element 当前指令对应的元素
+$attr 由当前元素的属性组成的对象, &lt;div id=&quot;aDiv&quot; class=&quot;box&quot;&gt;中$attr表示{id:&quot;aDiv&quot;,class:'box'}
+$transclude
+</code></pre>
+    <ul>
+        <li>不要在控制器内部操作DOM,和angularjs的风格相悖,可以通过链接函数实现这个需求,link参数,也可以通过compile参数中使用transcludeFn是推荐的做法,还可以在指令内部的控制器中用$transclude函数实现</li>
+        <li>指令的控制器和link函数可以进行互换,控制器主要用来提供指令间复用的行为,链接函数只能在当前内部指令中定义行为且无法复用</li>
+    </ul>
+    <pre><code>angular.module('myApp')
+    .directive('link',function(){
+        return {
+            restrict:'EA',
+            transclude:true,
+            controller:
+                function($scope,$element,$transclude,$log){
+                    $transclude(function(clone){
+                        var a=angular.element('&lt;a&gt;');
+                        a.attr({'href':'#','title':&quot;this is a link&quot;});
+                        a.text(clone.text());
+                        $log.info('create new tag in link directive'),
+                        $element.append(a);
+                    });
+            }
+    };
+});
+</code></pre>
+    <h4 id="compilelink"><a name="user-content-compilelink" href="#compilelink" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>compile参数，link参数 编译和链接</h4>
+    <ul>
+        <li>考虑性能问题时,要选择使用编译函数</li>
+        <li>编译阶段,遍历html文档,并根据js中的指令定义来处理页面上声明的指令</li>
+        <li>如果设置了compile函数,说明我们希望在指令和实时数据被放到DOM中之前进行DOM操作,这时DOM树还没有进行数据绑定,此时的操作只会参数很少的性能开销</li>
+        <li>用link函数创建的可以操作DOM的指令,可选的,如果定义了编译函数,则会返回链接函数,当两个函数都定义了时,会把compile所返回的函数当做链接函数,而link选项会被忽略,compile和link是互斥的</li>
+    </ul>
+    <pre><code>//改变查找指令的不同作用域,并作为链接函数的第四个参数
+//添加的前缀有 ? ^ ?^
+require:'ngModel'  //代表查询的指令为 ng-model
+require:'?ngModel',
+link:function(scope,ele,attrs,ngModel){if(!ngModel)return; ...指令内部已经有一个ngModelController实例}
+
+//编译函数负责对模板DOM进行转换,链接函数负责将作用域和DOM进行链接
+conpile:function(tEle,tAttrs,transcludeFn){
+    var tplEl = angular.element('&lt;div&gt;' + '&lt;h2&gt;&lt;/h2&gt;' + &lt;/div&gt;)
+    var h2=tplEl.find('h2');
+    h2.attr('type',tAttrs.type);
+    h2.attr('ng-model',tAttrs.ngModel);
+    h2.val('hello');
+    tEle.replaceWith(tplEl);
+    return function(scope,ele,attrs){
+        //链接函数
+    }
+}
+
+
+//一般只有三个参数,当指令定义中有require参数时,函数签名中会有第四个参数,代表控制器
+link:function($scope,$element,$attr,SomeCtrl){...可以访问required指定的控制器}
+</code></pre>
+    <h3 id="_7"><a name="user-content-_7" href="#_7" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>常用指令</h3>
+    <blockquote>
+        <p><a href="http://segmentfault.com/a/1190000002632671">input</a>
+            <br />
+            <a href="http://www.jb51.net/article/60733.htm">内置指令</a></p>
+    </blockquote>
+    <h4 id="text"><a name="user-content-text" href="#text" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>text</h4>
+    <pre><code>&lt;input type=&quot;text&quot; ng-model=&quot;greeting.username&quot; required ng-required=&quot;true&quot; ng-minlength=&quot;6&quot; ng-maxlength=&quot;15&quot; pattern=&quot;[0-9]{6,15}&quot; ng-pattern=&quot;/^\d{6,15}$/&quot;&gt;
+</code></pre>
+    <ul>
+        <li>当input有校验属性时，如果不符合校验条件，model的值会被更新为undefined</li>
+    </ul>
+    <h4 id="chekbox"><a name="user-content-chekbox" href="#chekbox" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>chekbox</h4>
+    <pre><code>&lt;input type=&quot;checkbox&quot; ng-model=&quot;greeting.chk&quot; ng-true-value=&quot;'YES'&quot; ng-false-value=&quot;'N'+'O'&quot; ng-change=&quot;chk(greeting.chk)&quot;&gt;
+&lt;p&gt;{{greeting.chk}}&lt;/p&gt;
+</code></pre>
+    <ul>
+        <li>默认情况下，绑定到复选框上的值是true和false，可以修改让他返回用户自定义的值。注意ng-true/false-value的值(参数)是表达式,即必须用&rsquo;&lsquo;包含起来</li>
+    </ul>
+    <h4 id="radio"><a name="user-content-radio" href="#radio" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>radio</h4>
+    <pre><code>&lt;input type=&quot;radio&quot; name=&quot;r1&quot; ng-model=&quot;greeting.rad&quot; value=&quot;value1&quot; ng-change=&quot;chk(greeting.rad)&quot;&gt;
+&lt;input type=&quot;radio&quot; name=&quot;r1&quot; ng-model=&quot;greeting.rad&quot; ng-value=&quot;'value2'&quot; ng-change=&quot;chk(greeting.rad)&quot;&gt;
+&lt;p&gt;{{greeting.rad}}&lt;/p&gt;
+</code></pre>
+    <ul>
+        <li>radio没有required属性，没法做必填校验，最好初始化的时候默认选择一个，value是选中时的值，ng-value也是选中时的值，但必须用表达式</li>
+    </ul>
+    <h4 id="_8"><a name="user-content-_8" href="#_8" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>布尔属性</h4>
+    <ul>
+        <li>ng-disabled,ng-readonly,ng-checked,ng-selected. (ng-src,ng-href)</li>
+        <li>布尔属性一般绑定到以下表单输入字段上 input textarea select button</li>
+    </ul>
+    <pre><code>    &lt;input type=&quot;text&quot; ng-model=&quot;someProperty&quot; placeholder=&quot;请输入&quot; /&gt;
+    &lt;button type=&quot;button&quot; ng-disabled=&quot;!someProperty&quot;&gt;完成&lt;/button&gt;&lt;br&gt;
+    &lt;textarea ng-disabled=&quot;isDisabled&quot;&gt;only 3 seconds&lt;/textarea&gt; &lt;br&gt;
+    &lt;label&gt;chkProperty={{chkProperty}}&lt;/label&gt;
+    &lt;input type=&quot;checkbox&quot; ng-checked=&quot;chkProperty&quot; ng-init=&quot;chkProperty='true'&quot; ng-model=&quot;chkProperty&quot;&gt; &lt;br&gt;
+
+    .run(function($rootScope,$timeout){
+        $rootScope.rootProperty='root scope';
+        $rootScope.isDisabled=false;
+        $timeout(function(){
+            $rootScope.isDisabled=true;
+        },3000);
+</code></pre>
+    <h4 id="ng-form"><a name="user-content-ng-form" href="#ng-form" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>ng-form</h4>
+    <h4 id="select"><a name="user-content-select" href="#select" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>select</h4>
+    <ul>
+        <li>常规的下拉框</li>
+    </ul>
+    <pre><code>    &lt;select name=&quot;s1&quot;&gt;
+        &lt;option value=&quot;1&quot;&gt;1&lt;/option&gt;
+        &lt;option value=&quot;2&quot;&gt;2&lt;/option&gt;
+        &lt;option value=&quot;3&quot;&gt;3&lt;/option&gt;
+    &lt;/select&gt;
+</code></pre>
+    <ul>
+        <li>ng-options &emsp; 一定要用as的语法，绑定的值才是单个的，否则会是整个对象。注意params的值</li>
+    </ul>
+    <pre><code>    &lt;select style=&quot;width:120px;&quot; ng-options=&quot;i.id as i.text for i in chkArr&quot; ng-model=&quot;params&quot;&gt;&lt;/select&gt;
+    &lt;p&gt;{{params}}&lt;/p&gt;
+
+    ng-options=&quot;i.checked as i.text for i in chkArr&quot;
+    ng-options=&quot;(i.id + ' id的值是 ' + i.text) for i in chkArr&quot;
+    ng-options=&quot;(i.id + ' id的值是 ' + i.text) group by i.checked for i in chkArr&quot;
+
+    //首选项会有空白的问题，默认给model绑定个值
+    //这个chArr就类似从AJAX得到的数据,对象数组的写法，常用
+    $scope.chkArr=[
+            {id:1,text:&quot;足球&quot;,checked:true},
+            {id:2,text:&quot;篮球&quot;,checked:false},
+            {id:3,text:&quot;网球&quot;,checked:false},
+            {id:4,text:&quot;冰球&quot;,checked:false}
+        ];
+        $scope.params=1; //初始化给个值，否则选择框会为空
+</code></pre>
+    <ul>
+        <li>ng-selected &emsp; 用在option标签中，这个表达式里面的属性为真时显示在界面上的值，对option的selected属性进行绑定</li>
+    </ul>
+    <pre><code class="javascript">    在前台页面加上这句个选择按钮一个默认值
+     ng-init=&quot;params.province=''&quot; 
+
+    $scope.sex={id:2,code:'sex code',name:'beijing'};  //绑定的模型尽量用对象表示，这个控制器里面的表示初始值
+
+    &lt;select ng-model=&quot;sex.id&quot;&gt;
+    //value属性是option标签操作用到的值，关键在ng-repeat循环取值
+        &lt;option value=&quot;{{i.id}}&quot; ng-repeat=&quot;i in chkArr&quot; ng-selected=&quot;i.id == sex.id&quot;&gt;{{i.text}}&lt;/option&gt;
+    &lt;/select&gt;
+    &lt;p&gt;{{sex.id}}&lt;/p&gt;
+    &lt;button type=&quot;button&quot; ng-if/show/hide=&quot;sex.id==2&quot;&gt;足球&lt;/button&gt;
+
+    //这个属性是布尔属性
+    &lt;input type=&quot;checkbox&quot; ng-model=&quot;isTwo&quot;&gt;
+    &lt;select&gt;
+        &lt;option &gt;默认值&lt;/option&gt;
+        &lt;option ng-selected=&quot;isTwo&quot;&gt;isTwo&lt;/option&gt;}
+    &lt;/select&gt;
+</code></pre>
+    <ul>
+        <li>
+            <p>ng-href/ng-src 对应的原生的href/src,值为表达式 {{express}},在表达式生效前不要加载该资源</p>
+        </li>
+        <li>
+            <p>ng-class 动态改变样式</p>
+        </li>
+    </ul>
+    <h2 id="_9"><a name="user-content-_9" href="#_9" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>作用域</h2>
+    <ul>
+        <li>作用域是视图和控制器之间的胶水</li>
+        <li>AngularJS启动并生产视图时，会将根ng-app 元素同$rootScope进行绑定，是所有$scope对象的最上层。最接近全局作用域对象，在上面附加太多业务不好，类似污染js全局作用域</li>
+        <li>$scope对象的所有属性都可以被视图访问到</li>
+        <li>一般指令不会创建自己的$scope，但是也有例外ng-controller,ng-repeat 等会创建自己的子作用域并将它们附加到DOM元素上</li>
+        <li>ng-app,ng-controller是特殊的指令，它们会修改指令嵌套在它们内部的指令的作用域。</li>
+        <li>angularJS有四种作用域</li>
+    </ul>
+    <p>1.普通的带原型继承的作用域 &ndash; ng-include,ng-controller,ng-switch (directive对应的scope:true)
+        <br /> 2.普通的带原型继承并有赋值行为的作用域 &ndash;ng-repeat
+        <br /> 3.Isolate作用域 &ndash; (directive对应的scope:{&hellip;}),没有原型继承，可以通过@,=,&amp;和父作用域通信
+        <br /> 4.transclude是普通的带原型继承的作用域 &ndash; (directive对应的transclude:true)，但与Isolate作用域相邻</p>
+    <blockquote>
+        <p>run方法，使用run方法访问$rootScope</p>
+    </blockquote>
+    <pre><code>    angular.module('myApp',[])
+        .run(function($rootScope){
+            $rootScope.pro_rootScope=&quot;pro_rootScope&quot;;
+        });
+</code></pre>
+    <ul>
+        <li>$scope对象的生命周期
+            <br /> &gt; 创建 &emsp;用$injector创建一个新的作用域
+            <br /> &gt; 链接 &emsp;通过$watch 与视图联系上
+            <br /> &gt; 更新 &emsp;脏值检测，发生变化就会触发指定的回调函数
+            <br /> &gt; 销毁 &emsp;自动清理，手动方法$scope对象上的$destroy()方法来清理这个作用域</li>
+    </ul>
+    <h3 id="_10"><a name="user-content-_10" href="#_10" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>当前作用域</h3>
+    <blockquote>
+        <p>由DOM周围嵌套的控制器提供</p>
+    </blockquote>
+    <pre><code>    &lt;p&gt;作用域&lt;/p&gt;
+    &lt;p&gt;aa: {{rootProperty}}&lt;/p&gt;
+    &lt;div ng-controller=&quot;ParentController&quot;&gt;
+        &lt;p&gt;aa: {{rootProperty}} and {{parentProperty}}&lt;/p&gt;
+        &lt;div ng-controller=&quot;ChildController&quot;&gt;
+            &lt;p&gt;aa: {{rootProperty}} and {{parentProperty}} and {{childProperty}}&lt;/p&gt;
+            &lt;p&gt;{{fullSentenceFromChild}}&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    .run(function($rootScope){
+        $rootScope.rootProperty='root scope';
+    })
+    .controller('ParentController', ['$scope', function ($scope) {
+        $scope.parentProperty='parent.scope';
+    }])
+    .controller('ChildController', ['$scope', function ($scope) {
+        $scope.childProperty='child scope';
+        //可以通过$scope直接访问原型中的任意属性
+        $scope.fullSentenceFromChild=$scope.rootProperty+' and '+$scope.parentProperty+' and '+$scope.childProperty;  
+    }])
+</code></pre>
+    <h3 id="js-github"><a name="user-content-js-github" href="#js-github" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>js原型继承机制  <a href="https://github.com/angular/angular.js/wiki/Understanding-Scopes#ngRepeat">github原型继承</a></h3>
+    <ul>
+        <li>尽量在ng-model 原型继承中使用. obj.pro 才会去查找原型链</li>
+        <li>在子作用域中访问一个父作用域定义的属性，js首先会在子作用域中寻找该属性，没找到再从原型链上的父作用域中寻找，一直向上，在angularJS中，原型链顶端是$rootscope。如果给同名的子作用域的属性赋值，则不会查询原型链，会在当前子作用域创建同名的属性 <code>childScope.aString='child string';</code></li>
+        <li>如果赋值目标是子作用域属性的子属性，数组和对象，会查找当前子作用域，找不到会去原型链查询，在父作用域找到这两个对象，再对这两个对象的属性进行赋值操作，子作用域不会创建两个新的同名属性 childScope.anArray[1]=22;childScope.anObject.property1=&rsquo;child prop1&rsquo;</li>
+        <li>如果是<code>childScope.anArray=[100,200];childScope.anObject={name:'Mark',country:'USA'};</code>因为赋值目标是子作用域的属性，原型链不会被查询，js会直接在子作用域上创建两个同名属性</li>
+    </ul>
+    <h3 id="angularjsscope"><a name="user-content-angularjsscope" href="#angularjsscope" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>AngularJS作用域scope继承</h3>
+    <ul>
+        <li>
+            <p><a href="http://www.angularjs.cn/A09C">动感angularJS</a></p>
+        </li>
+        <li>
+            <p>ng-include,ng-switch,ng-view,ng-if,ng-repeat,ng-init,ng-bind==={{}},ng-cloak,ng-model,ng-show/ng-hide,ng-change,ng-form,ng-click,ng-options,ng-class,</p>
+        </li>
+    </ul>
+    <h4 id="ng-repeat-parentindex"><a name="user-content-ng-repeat-parentindex" href="#ng-repeat-parentindex" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>ng-repeat 子作用域 $parent，$index</h4>
+    <ul>
+        <li>处在ng-repeat中的代码，对全局的$scope里的变量是不可见的，里面的变量都属于ngRepeat创建的子作用域里面的，$parent来引用全局$scope里面的成员</li>
+        <li>ng-repeat/ng-include/ng-switch/ng-view/ng-controller方式会创建子作用域，并且进行原型继承，指令是用scope:true 和 transclude:true创建的。默认情况下创建指令会用scope:false,不会创建子作用域</li>
+        <li>scope:{&hellip;} 创建的指令会生成新的独立作用域，不会进行原型继承</li>
+        <li>ng-repeat会为每一个迭代项item创建子作用域，子作用域也会从父作用域进行原型继承。并且还是会在子作用域中新建同名属性，把item赋值给子作用域对应的同名属性</li>
+    </ul>
+    <pre><code>    &lt;tr ng-repeat=&quot;i in chkArr&quot;&gt;
+        &lt;td&gt;
+            &lt;span ng-bind=&quot;i.id&quot;&gt;&lt;/span&gt;:&lt;input name=&quot;radio1&quot; type=&quot;radio&quot; value=&quot;{{i.text}}&quot; ng-model=&quot;radio_repeat&quot; /&gt;&lt;span &gt;{{radio_repeat}}&lt;/span&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+    //$index表示ngRepeat循环的序号,若有多个ng-repeat,ng-if，则用$parent.$parent.$parent.$index/$first
+    &lt;ul ng-init=&quot;names=[{name:'Joe',age:25},{name:'Jack',age:23},{name:'Peter',age:27},{name:'Lucy',age:28}]&quot;&gt;
+        &lt;li ng-repeat=&quot;i in names&quot;&gt;{{$index+1}}、姓名：{{i.name}},年龄：{{i.age}}&lt;/li&gt;
+    &lt;/ul&gt;
+</code></pre>
+    <h2 id="_11"><a name="user-content-_11" href="#_11" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>外部库</h2>
+    <ul>
+        <li>angular-ui-router,angular-cookie,restangular(依赖lodash),</li>
+        <li>angular-ui 是一个大库,可以只使用里面需要的部分</li>
+    </ul>
+    <pre><code>//查看对应的 README.md
+//https://github.com/angular-ui/ui-router/wiki
+bower install angular-ui-router --save
+
+//cookie使用的库 angular-cookie, 还有个带有s的,查看README.md
+//https://github.com/ivpusic/angular-cookie
+bower install angular-cookie --save
+
+//替代原生的http请求, 依赖lodash库
+//https://github.com/mgonto/restangular
+bower install lodash --save
+bower install restangular --save
+</code></pre>
+    <ul>
+        <li>使用要注意的问题, 在index页面一定要手动加上自己写的ctrl.js和自己写的service.js以及filter.js</li>
+        <li>控制器的名称和app.js里面用的药一致</li>
+    </ul>
+    <h3 id="_12"><a name="user-content-_12" href="#_12" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>路由及视图</h3>
+    <p><a href="https://github.com/angular-ui/ui-router/wiki/Quick-Reference">路由ui-router</a></p>
+    <p><strong>安装使用</strong></p>
+    <ul>
+        <li>bower install angular-ui-router &ndash;save //同步进pakckage.json中</li>
+    </ul>
+    <pre><code class="javascript">    index.html
+    &lt;div ui-view=&quot;indexView&quot;&gt;&lt;/div&gt;  //等价于 ui-view=&quot;&quot; ==&gt; views:''{}
+    main.html
+    &lt;div ui-view=&quot;mainView&quot;&gt;&lt;/div&gt;
+
+    app.js
+    angular.module('webApp',['ngCookies','ui.routers'])
+        .config(function($stateProvider,$urlRouterProvider){
+            $urlRouterPorvider.otherwise('/allFile');
+            $stateProvider
+                .state('main',{  //状态确定页面间的关系
+                    url:'/main',  //在浏览器地址栏显示的路由
+                    views:{
+                        'indexView':{  //ui-view对应的取值
+                            templateUrl:'views/main.html',
+                            controller:/mainCtrl
+                        }
+                    }
+                    })
+                .state('main.allFile',{
+                    url:'/allFile',
+                    views:{
+                        'mainView':{
+                            templateUrl:'views/files/all-file.html',
+                            controller:'allFileCtrl'
+                        }
+                    }
+                    });
+        });
+
+        controller.js
+        $location.path('/main/audit/' + view);
+</code></pre>
+    <h3 id="restangular"><a name="user-content-restangular" href="#restangular" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>restangular</h3>
+    <p><a href="https://github.com/mgonto/restangular">github地址</a>
+        <br />
+        <a href="http://www.ng-newsletter.com/posts/restangular.html">学习文档</a></p>
+    <p><strong>安装使用</strong></p>
+    <pre><code class="javascript">    bower install restangular --save
+    bower install ladash --save  //restangular依赖的一个库
+    &lt;script src=&quot;script/js/lodash.compat.js&quot;&gt;&lt;/script&gt; //先下载再去index页面导入
+    &lt;script src=&quot;script/js/restangular.js&quot;&gt;&lt;/script&gt;
+
+    angular.module('webApp',['restangular'])
+        .controller('myCtrl',['allFileServer','$scope',function($scope,allFileServer){
+            //代替自带的$http相关的服务，获取远程的数据，ajax
+            allFileServer.allFile(allParams).then(function(data){
+                $scope.allFileItems=data.result.resultList || [];
+            });
+        }])
+        //写一个单独的服务文件，给控制器调用
+        .service('allFileServer',['Restangular',function(Restangular){
+            this.allFile=function(param){
+                return Restangular.all('myapp/show/home').post(param);
+            };
+        }]);
+</code></pre>
+    <h3 id="angular-cookies"><a name="user-content-angular-cookies" href="#angular-cookies" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>angular-cookies</h3>
+    <h3 id="angular-ui-bootstrap"><a name="user-content-angular-ui-bootstrap" href="#angular-ui-bootstrap" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>angular-ui-bootstrap</h3>
+    <h3 id="ngresource"><a name="user-content-ngresource" href="#ngresource" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>ngResource</h3>
+    <h3 id="nganimate"><a name="user-content-nganimate" href="#nganimate" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>ngAnimate</h3>
+    <h2 id="_13"><a name="user-content-_13" href="#_13" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>表达式</h2>
+    <ul>
+        <li>{{expression}} 本质就是一个表达式，用$watch进行监听时，会对表达式或者函数进行运算，和js的eval()方法相似</li>
+        <li>$digest循环过程中会自动解析表达式，手动解析用内置服务$parse</li>
+    </ul>
+    <h2 id="_14"><a name="user-content-_14" href="#_14" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>表单验证</h2>
+    <h2 id="_15"><a name="user-content-_15" href="#_15" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>项目架构/目录结构</h2>
+    <ul>
+        <li>script目录里面放所有js文件，里面有各种类型的文件夹controller,filter,directive,services,config。这些文件夹里面再放具体的js文件</li>
+    </ul>
+    <p><img alt="504dd0061718bd5a1bcac614619c01de.png" src="http://pic.ffsky.net/images/2015/12/11/504dd0061718bd5a1bcac614619c01de.png" /></p>
+    <ul>
+        <li>功能模块化,便于调试，不影响性能但开发繁琐</li>
+    </ul>
+    <pre><code>    angular.module('myApp.directives',[]);
+    angular.module('myApp.filters',[]);
+    angular.module('myApp.services',[]);
+    //一般在控制器中使用服务,将它们注入到控制器模块中
+    angular.module('myApp.controllers',['myApp.services']);
+    //或者注入主模块中使用
+    angular.module('myApp',[
+        'myApp.directives',
+        'myApp.filters',
+        'myApp.services',
+        'myApp.controllers'
+        ]);
+</code></pre>
+    <ul>
+        <li>多版本node安装 nvmw, 还是只有 v0.12.0 版本合适</li>
+    </ul>
+    <pre><code>git clone https://github.com/hakobera/nvmw.git
+将这个目录加入环境变量中
+运行 nvmw  linux中是nvm  
+git clone https://github.com/creationix/nvm.git
+
+//默认是从国外的服务器下载的，比较慢,更改镜像服务器 下载包地址
+set &quot;NVMW_NODEJS_ORG_MIRROR=https://npm.taobao.org/dist&quot;
+//更换npm 下载源
+npm --registry=https://registry.npm.taobao.org install koa
+</code></pre>
+    <ul>
+        <li>搭建新项目,用yo自动化生成项目,首先要安装生成器,尽量用windows自带的cmd窗口,不能用git bash,yo不会正常显示</li>
+        <li>生成器的选择 generator-angular</li>
+    </ul>
+    <pre><code>yo --&gt; angular
+或者直接安装生成器 npm install generator-angular -g
+yo angular
+npm search yeoman-generator
+</code></pre>
+    <ul>
+        <li>bower</li>
+    </ul>
+    <p><a href="http://bower.io/docs/api/">bower的API</a></p>
+    <pre><code>bower install 是安装当前目录下的bower.json文件
+bower install jquery 是安装本地或者远程的一个包
+bower install jquery#0.12.2 安装远程对应版本的包
+bower uninstall jquery
+
+bower list 列出所有本地安装的包
+构建自己的应用时应该将所有的已安装的包提交到服务器上
+</code></pre>
+    <h2 id="_16"><a name="user-content-_16" href="#_16" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>常用方法</h2>
+    <h3 id="setinterval"><a name="user-content-setinterval" href="#setinterval" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>setInterval</h3>
+    <pre><code>        var updateClock=function(){
+            $scope.clock=new Date();
+        }
+        setInterval(function(){
+            $scope.$apply(updateClock);
+        },1000);
+        updateClock();
+
+        $timeout(function(){
+            $rootScope.isDisabled=true;
+        },3000);
+</code></pre>
+    <h3 id="angularforeach"><a name="user-content-angularforeach" href="#angularforeach" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>angular.forEach</h3>
+    <ul>
+        <li>主要用来循环一个数组,对象数组,第一个参数为要遍历的对象(数组),第二个参数为函数</li>
+    </ul>
+    <pre><code>    &lt;div&gt;{{forEachData}}&lt;/div&gt;
+
+        $scope.chkArr=[
+            {id:1,text:&quot;足球&quot;,checked:true},
+            {id:2,text:&quot;篮球&quot;,checked:false},
+            {id:3,text:&quot;网球&quot;,checked:false},
+            {id:4,text:&quot;冰球&quot;,checked:false}
+        ];
+
+    $scope.forEachData=[];
+    //data就是每一次循环得到的数组项，在对象数组中为一个对象
+    angular.forEach($scope.chkArr,function(data){
+        if(data.id=='2'){
+            $scope.forEachData.push(data);
+        }else if(data.id=='3'){
+            $scope.forEachData.push(data);
+        }
+        console.log(data);
+    });
+</code></pre>
+    <h3 id="watchdigestapply"><a name="user-content-watchdigestapply" href="#watchdigestapply" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>$watch/$digest/$apply</h3>
+    <ul>
+        <li>angularJS分compile和linking阶段，会寻找每个指令directive，然后生成每个需要的$watch。每次绑定一些数据到UI界面上时就会往$watch队列里插入一条$watch,ng-model,{{}},ng-bind都是绑定</li>
+        <li>$digest循环会遍历$watch队列</li>
+        <li>$apply决定什么事件进入angular执行上下文,当事件触发时，你调用$apply就会进入上下文</li>
+    </ul>
+    <pre><code class="javascript">    &lt;input type=&quot;text&quot; ng-model=&quot;watchPro&quot;&gt;
+    &lt;p&gt;watchPro update:{{updated}} Times&lt;/p&gt;
+
+    $scope.watchPro=&quot;watchPro oldValue&quot;;
+    //第一次当控制器执行到这里时会立即执行一次
+    $scope.updated=-1;
+    $scope.$watch('watchPro', function() {
+        $scope.updated++;
+    });
+    //后面的函数也可以接收2个参数，新值和旧值，略过第一次执行
+    $scope.$watch('watchPro', function(newValue,oldValue) {
+            if(newValue==oldValue){
+                return;
+            }
+            $scope.updated++;
+        });
+</code></pre>
+    <h2 id="_17"><a name="user-content-_17" href="#_17" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>项目修改</h2>
+    <ul>
+        <li>ng-class,clsss</li>
+    </ul>
+    <pre><code>//逻辑复杂的直接在后台操作
+//通过各种判断条件得到 $scope.ClassRR='unfinsihed';
+//并将默认值放在 init() 函数里面
+&lt;li class=&quot;{ClassRR}&quot;&gt;
+
+//较简单的逻辑,直接在界面通过ng-class 的true/false判断
+//如果一步里要分多个条件,还分多步,那就要在后台写判断
+//后台就判断 $scope.flag=1 ，默认值
+&lt;li ng-class=&quot;{'completed':flag===1,'middle':flag===2,'unfinshed':flag===4}&quot;&gt;
+</code></pre>
+    <ul>
+        <li>$filter内置模块的使用。绑定到input上的日期默认是时间戳的格式,因为值绑定在ng-model上又不能用 <code>{{aa | date:'yyyy-MM-dd'}}</code>的形式,故而需要在控制器中用$filter方法. 直接用 <code>new Date().getTime()</code> 也可以</li>
+    </ul>
+    <h2 id="angular"><a name="user-content-angular" href="#angular" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>angular运行机制</h2>
+    <h2 id="angular_1"><a name="user-content-angular_1" href="#angular_1" class="headeranchor-link" aria-hidden="true"><span class="headeranchor"></span></a>angular权限控制</h2>
+    <ul>
+        <li>UI处理(根据用户拥有的权限,判断页面上一些内容是否显示)，通过自定义指令来处理,</li>
+        <li>路由处理(当用户访问一个它没有权限访问的url时,跳转到一个错误提示的页面)</li>
+        <li>
+            <p>HTTP请求处理(当我们发送一个数据请求,如果返回的status是401或者403时,通常重定向到一个错误提示的页面)</p>
+        </li>
+        <li>
+            <p>angular项目的启动时通过ng-app启动, 但是一些情况下我们希望angular项目的启动在我们的控制之中,现在我们是希望能够获取到当前登录用户的所有permission映射关系后，再启动angular的app,angular本身也提供了这种方式即angular.bootstrap()</p>
+        </li>
+    </ul>
+    <pre><code>//app.js
+
+var app=angular.module('myApp',[]);
+var permissionList;
+app.run(function(permissions){
+    permissions.setPermissions(permissionList)
+});
+angular.element(document).ready(function(){
+//用的是$.get()2个参数,请求的路径url和回调函数(2个参数,数据和状态)
+    $.get('/api/UserPermission',function(data){
+//主要是这步获得的映射关系
+        permissionList = data;
+        angular.bootstrap(document,['App']);
+    });
+});
+
+//common_service.js
+//取得用户的权限集合后,将这个集合存档到对应的一个service中,
+//将permissions存放到factory变量中,使之一直处于内存中,实现全局变量的作用,且又没有污染命名空间
+//通过$broadcast广播事件,当权限发生变更的时候
+angular.module('myApp')
+    .factory('permissions',function($rootScope){
+        var permissionList;
+        return {
+            setPermissions:function(permissions){
+                permissionList = permissions;
+                $rootScope.$broadcast('permissionsChanged');
+            },
+            hasPermission:function(permissions){
+            permission = permission.trim();
+            return _.some(permissionList,function(item){
+                if(_.isString(item.Name)){
+                    return item.Name.trim() === permission;
+                }
+            });
+        }
+        };
+    });
+
+//自己编写一个指令,确定UI组件的依据权限进行显隐
+//比较理想的情况是通过一个has-permission属性校验permissiondename值
+&lt;div has-permission='Edit'&gt;
+    &lt;a href=&quot;/#/courses/{{id}}/edit&quot;&gt;{{name}}&lt;/a&gt;
+&lt;/div&gt;
+&lt;div has-permission='!Edit'&gt;
+    {{name}}
+&lt;/div&gt;
+
+//指令
+angular,module('myApp').directive('hasPermission',function(permissions){
+    return {
+        link:function(scope,element,attrs){
+            if(!_.isString(attrs.hasPermission))
+                throw &quot;hasPermission value must be a string&quot;;
+
+            var value=attrs.hasPermission.trim();
+            var notPermissionFlag=value[0] === '!';
+            if(notPermissionFlag){
+                value = value.slice(1).trim();
+            }
+
+            function toggleVisibilityBaseOnPermission(){
+                var hasPermission = permissions.hasPermission(value);
+                if(hasPermission) &amp;&amp; !notPermissionFlag || !hasPermission &amp;&amp; notPermissionFlag){
+                    element.show();
+                }else{
+                    element.hide();
+                }
+            }
+
+            toggleVisibilityBaseOnPermission();
+            scope.$on('permissionsChanged',toggleVisibilityBaseOnPermission);
+        }
+    };
+});
+</code></pre>
+    <p><a href="http://www.open-open.com/lib/view/open1408084201582.html">前后端分离实现的权限控制</a>
+        <br /> + 路由上的依权限访问
+        <br /> + 定义一个路由的时候,增加一个permission的属性,属性的值就是有哪些权限才能访问当前url,然后通过routeChangeStart事件一直监听url的变化，每次变化url的时候,去校验当前要跳转的url是否符合条件，然后决定跳转成功还是跳转到错误的页面</p>
+    <pre><code>//router.js
+app.config(function($routeProvider){
+    $routeProvider
+        .when('/',{
+            templateUrl:'views/viewCourses.html',
+            controller:'viewCoursesCtrl'
+        })
+        .when('/courses/:id/edit',{
+            templateUrl:'views/editCourses.html',
+            controller:'eidtCourses',
+            permission:'Edit'
+        });
+});
+
+//mainCtrl.js或者indexCtrl.js(总之是父层Controller)
+//每次view视图在跳转时，父容器的controller中判断一些它有没有跳转的权限
+app.controller('mainAppCtrl',function($scope,$location,permissions){
+    $scope.$on('$routeChangeStart',function(scope,next,current){
+        var permission=next.$$route.permission;
+        if(_.isString(permission) &amp;&amp; !permisions.hasPermission(permission)){
+            $location.path('/unauthorized');
+        }
+    });
+});
+</code></pre>
+    <p><strong>前端常用工具合集</strong></p>
+    <blockquote>
+        <p>npm换源的问题，临时: <code>npm config set registry http://registry.cnpmjs.org</code></p>
+    </blockquote>
+    <p><strong>学英语有两种方法，一种是先做题，遇到不会的单词再查，另一种是先拿着单词本背。尽管专家好像更推荐前者，但如果你现在一窍不通，还是老老实实先背单词吧</strong></p>
+    <ul>
+        <li>sublime/webstorm</li>
+        <li>nodejs</li>
+        <li>bower</li>
+        <li>karma</li>
+        <li>chrome</li>
+        <li>git</li>
+        <li>Jasmine</li>
+        <li>http-server</li>
+        <li>Angularjs Batarang</li>
+    </ul>
+    <p><strong>参考文档</strong></p>
+    <p><a href="http://blog.csdn.net/kimmking/article/details/50189221">KimmKing大神</a></p>
+</article>

@@ -1,0 +1,43 @@
+<div>
+  <div class="m-head">
+    <!-- <div class="m-float-l">
+      <img src="../images/logo.png" alt="中国移动" class="m-head-img-1">
+    </div> -->
+    <p class="m-top-font m-float-l m-head-p-1" style="margin-left: 20px"><a href="/#/main/ctrl/error">后台管理</a></p>
+    <p class="m-top-font m-float-l m-head-p-1" style="margin-left: 20px"><a href="/#/main/blog/fileList">个人博客</a></p>
+    <img src="../images/user.png" class="m-float-r m-head-img-2">
+    <div class="m-head-login m-float-r">
+      <div class="m-head-p-2 m-font-s-18">登录/注册</div>
+      <div class="m-head-p-3"><span>修改密码</span> | <span>注销</span></div>
+    </div>
+    <div class="m-float-r">
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal" style="margin:10px 10px 0 0;">
+        个人简介
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myModalLabel">网站信息</h4>
+            </div>
+            <div class="modal-body">
+              <p>个人博客</p>
+              <p>前端需要掌握的各方面的知识点</p>
+              <p style="font-size:20px;">html/css/javascript/jquery/angularjs/nodejs/yo/grunt/bower</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div ui-view="mainView"></div>
+</div>

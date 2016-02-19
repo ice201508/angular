@@ -1,0 +1,118 @@
+<div>
+  <div class="clearfix">
+    <span class="m-font-s-21">对账文件自动/手动下发配置</span>
+    <i class="glyphicon glyphicon-triangle-right"></i>
+  </div>
+  <div>
+    <div class="clearfix m-margin-t">
+      <div class="m-float-l">
+        <p class="m-float-l m-font-s-12 m-main-p m-margin-l-8">文件类型</p>
+        <select class="m-float-l m-main-select form-control input-sm" ng-model="params.flleType" ng-options="i.id as i.name for i in backup"></select>
+      </div>
+      <div class="m-float-l">
+        <p class="m-float-l m-font-s-12 m-main-p m-margin-l-8">下发模式</p>
+        <select class="m-float-l m-main-select form-control input-sm" ng-model="params.flleType" ng-options="i.id as i.name for i in backup"></select>
+      </div>
+      <div class="m-float-l">
+        <p class="m-float-l m-font-s-12 m-main-p m-margin-l-8">接入渠道</p>
+        <select class="m-float-l m-main-select form-control input-sm" ng-model="params.flleType" ng-options="i.id as i.name for i in backup"></select>
+      </div>
+      <div class="m-float-l">
+        <p class="m-float-l m-font-s-12 m-main-p m-margin-l-8">省份</p>
+        <select class="m-float-l m-main-select form-control input-sm" ng-model="params.flleType" ng-options="i.id as i.name for i in backup"></select>
+      </div>
+    </div>
+    <div class="clearfix m-margin-t">
+      <div class="m-float-l">
+        <p class="m-float-l m-font-s-12 m-main-p m-margin-l-8">状态</p>
+        <select class="m-float-l m-main-select form-control input-sm" ng-model="params.flleType" ng-options="i.id as i.name for i in backup"></select>
+      </div>
+      <div class="m-float-l">
+        <p class="m-float-l m-font-s-12 m-main-p m-margin-l-8">账期</p>
+        <div class="m-main-select input-group">
+          <input
+            type="text" readonly="readonly"
+            ng-click="open($event)"
+            class="form-control input-sm disabled"
+            datepicker-popup="{{format}}"
+            ng-model="params.time"
+            is-open="opened"
+            datepicker-options="dateOptions"
+            date-disabled="disabled(date, mode)"
+            ng-required="true"
+            close-text="取消"
+            ng-change="dates();"
+          />
+          <span class="input-group-btn">
+              <button
+                  type="button"
+                  class="btn btn-default btn-sm"
+                  ng-click="open($event);"
+                  >
+                <i class="glyphicon glyphicon-calendar"></i>
+              </button>
+          </span>
+        </div>
+      </div>
+      <div class="m-float-l m-btn-4">
+        <button type="button" ng-click="search()" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-download-alt"></i>&nbsp;&nbsp;下载</button>
+      </div>
+      <div class="m-float-l m-margin-l-16">
+        <button type="button" ng-click="search()" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-download"></i>&nbsp;&nbsp;下发</button>
+      </div>
+      <div class="m-float-l m-margin-l-16">
+        <button type="button" ng-click="search()" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-arrow-down"></i>&nbsp;&nbsp;跨账期重发</button>
+      </div>
+      <div class="m-float-l m-margin-l-16">
+        <button type="button" ng-click="search()" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-search"></i>&nbsp;&nbsp;查询</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:10px;overflow-y: auto; height: 300px;">
+    <table class="table table-bordered text-center table-striped table-hover">
+      <thead style="font-size:16px;background-color: #1c4587;color:#fff;">
+        <tr>
+          <td>文件类型</td>
+          <td>接入渠道</td>
+          <td>机构名称</td>
+          <td>状态</td>
+          <td>账期</td>
+          <td>对账文件名</td>
+        </tr>
+      </thead>
+      <tbody style="font-size:12px;">
+        <tr ng-repeat="i in list">
+          <td>{{i.aa}}</td>
+          <td>{{i.bb}}</td>
+          <td>{{i.cc}}</td>
+          <td>{{i.dd}}</td>
+          <td>{{i.ee}}</td>
+          <td>{{i.ff}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin: 5px 0 0 400px;">
+    <nav>
+    <ul class="pagination">
+      <li>
+        <a href="#" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      <li><a href="#">1</a></li>
+      <li><a href="#">2</a></li>
+      <li><a href="#">3</a></li>
+      <li><a href="#">4</a></li>
+      <li><a href="#">5</a></li>
+      <li>
+        <a href="#" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  </div>
+</div>
